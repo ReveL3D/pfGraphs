@@ -1,0 +1,21 @@
+var weapons = 
+{
+	"AK47":
+	{
+			"maxDmg":42,
+			"minDmg":30,
+			"maxRange":80,
+			"minRange":160,
+			"torsoMul":1.0,
+			"headMul":1.4
+	},
+	"AK74":
+	{
+			"maxDmg":33,
+			"minDmg":23,
+			"maxRange":70,
+			"minRange":110,
+			"torsoMul":1.0,
+			"headMul":1.4
+	}
+}

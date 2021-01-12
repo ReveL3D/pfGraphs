@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html>
+
+<meta charset="UTF-8">
+
+<head>
+<script src="https://unpkg.com/mathjs@8.1.1/lib/browser/math.js"></script>
+<script type="text/javascript" src="weapons.js"></script>
+<script type="text/javascript" src="plotly.min.js" charset="utf-8"></script>
+
+<script>
+function wez()
+{
+	var ak = document.getElementById("mySelect").value;
+	console.log();
+}
+</script>
+
+</head>
+
+<body>
+<button onClick="wez()">wez</button>
+<div id="weaponList">
+	<form onClick="onChange()">
+		<select id="mySelect" size=2>
+			<option>AK47</option>
+			<option>AK74</option>
+		</select>
+	</form>
+</div>
+
+<div id="cosie"></div>
+<div id="plot" style="width:1000px;height:700px;"></div>
+
+<script>
+	function onChange()
+	{
+		var x = document.getElementById("mySelect").value;
+		document.getElementById("cosie").innerHTML = x;
+		draw();
+	}
+	function draw()
+	{
+		var whatWeapon = document.getElementById("mySelect").value;
+		var maxDmg = weapons[whatWeapon].maxDmg;
+		var minDmg = weapons[whatWeapon].minDmg;
+		var maxRange = weapons[whatWeapon].maxRange;
+		var minRange = weapons[whatWeapon].minRange;
+		var a = (maxDmg-minDmg)/(maxRange-minRange);
+		var b = maxDmg-(maxRange*a);
+		const xValues = math.range(0, minRange+40, 0.5).toArray();
+		var yValues = xValues.map(function(curr){
+			if(curr<=maxRange)
+			{
+				return maxDmg;
+			}
+			else if(curr>=minRange)
+			{
+				return minDmg;
+			}
+			else
+			{
+				return (a*curr)+b;
+			}
+		});
+		const trace1 = {
+			x: xValues,
+			y: yValues,
+			type: 'scatter'
+		}
+		const data = [trace1]
+		Plotly.newPlot('plot',data);
+    }
+</script>
+
+</body>
+</html>
