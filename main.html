@@ -8,19 +8,9 @@
 <script src="https://unpkg.com/mathjs@8.1.1/lib/browser/math.js"></script>
 <script type="text/javascript" src="weapons.js"></script>
 <script type="text/javascript" src="plotly.min.js" charset="utf-8"></script>
-
-<script>
-function wez()
-{
-	var ak = document.getElementById("mySelect").value;
-	console.log();
-}
-</script>
-
 </head>
 
 <body>
-<button onClick="wez()">wez</button>
 <div id="weaponList">
 	<form onClick="onChange()">
 		<select id="mySelect" size=2>
@@ -42,34 +32,49 @@ function wez()
 	}
 	function draw()
 	{
+		// Get name selected weapon from weapon list, example:"AK47"
 		var whatWeapon = document.getElementById("mySelect").value;
+		
+		// Get values for that weapon from weapons.js json file
 		var maxDmg = weapons[whatWeapon].maxDmg;
 		var minDmg = weapons[whatWeapon].minDmg;
 		var maxRange = weapons[whatWeapon].maxRange;
 		var minRange = weapons[whatWeapon].minRange;
+		
+		// calculate a,b for f(x)=ax+b
 		var a = (maxDmg-minDmg)/(maxRange-minRange);
 		var b = maxDmg-(maxRange*a);
+		
+		// initialize x number line for graph
 		const xValues = math.range(0, minRange+40, 0.5).toArray();
-		var yValues = xValues.map(function(curr){
+		
+		// get y values for creating graph
+		var yValues = xValues.map(function(curr)
+		{
+			//[0,maxrange] -> constant function
 			if(curr<=maxRange)
 			{
 				return maxDmg;
 			}
+			//[minRange,minRange+40] constant function
 			else if(curr>=minRange)
 			{
 				return minDmg;
 			}
+			//(maxRange,minRange) linear function
 			else
 			{
 				return (a*curr)+b;
 			}
 		});
-		const trace1 = {
+		
+		const trace1 = 
+		{
 			x: xValues,
 			y: yValues,
 			type: 'scatter'
 		}
-		const data = [trace1]
+		const data = [trace1];
 		Plotly.newPlot('plot',data);
     }
 </script>
