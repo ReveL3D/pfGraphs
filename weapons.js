@@ -6,7 +6,7 @@ var weapons =
 			"minDmg":30,
 			"maxRange":80,
 			"minRange":160,
-			"torsoMul":1.0,
+			"torsoMul":1.1,
 			"headMul":1.4
 	},
 	"AK74":
@@ -17,5 +17,14 @@ var weapons =
 			"minRange":110,
 			"torsoMul":1.0,
 			"headMul":1.4
+	},
+	"AS Val":
+	{
+			"maxDmg":34,
+			"minDmg":20,
+			"maxRange":50,
+			"minRange":85,
+			"torsoMul":1.0,
+			"headMul":1.4
 	}
-}
+};
