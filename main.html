@@ -5,23 +5,34 @@
 <meta charset="UTF-8">
 
 <head>
-<script src="https://unpkg.com/mathjs@8.1.1/lib/browser/math.js"></script>
+<script src="math.js"></script>
 <script type="text/javascript" src="weapons.js"></script>
 <script type="text/javascript" src="plotly.min.js" charset="utf-8"></script>
 </head>
 
 <body>
+<button onClick="testVariables()">testVariables</button>
 <div id="weaponList">
 	<form onClick="onChange()">
-		<select id="mySelect" size=2>
+		<select id="mySelect" size=10>
 			<option>AK47</option>
 			<option>AK74</option>
+			<option>AS Val</option>
 		</select>
+	</form>
+	
+	<form>
+		<input type="checkbox" name="Body" id="Body">
+		<label for="Body">Body</label><br>
+		<input type="checkbox" name="Torso" id="Torso">
+		<label for="Torso">Torso</label><br>
+		<input type="checkbox" name="Head" id="Head">
+		<label for="Head">Head</label><br>
 	</form>
 </div>
 
 <div id="cosie"></div>
-<div id="plot" style="width:1000px;height:700px;"></div>
+<div id="plot" style="width:100%;height:700px;"></div>
 
 <script>
 	function onChange()
@@ -30,7 +41,14 @@
 		document.getElementById("cosie").innerHTML = x;
 		draw();
 	}
-	function draw()
+	function testVariables()
+	{
+		var testVariable = document.getElementById("Body").value;
+		alert(testVariable);
+	}
+	
+	
+	function getWeaponData()
 	{
 		// Get name selected weapon from weapon list, example:"AK47"
 		var whatWeapon = document.getElementById("mySelect").value;
@@ -40,16 +58,23 @@
 		var minDmg = weapons[whatWeapon].minDmg;
 		var maxRange = weapons[whatWeapon].maxRange;
 		var minRange = weapons[whatWeapon].minRange;
+		var headMul = weapons[whatWeapon].headMul;
+		var torsoMul = weapons[whatWeapon].torsoMul;
 		
 		// calculate a,b for f(x)=ax+b
 		var a = (maxDmg-minDmg)/(maxRange-minRange);
 		var b = maxDmg-(maxRange*a);
 		
+		var minShots = Math.ceil( 100/maxDmg );
+		var maxShots = Math.ceil( 100/minDmg );
+		
+		var xD = (minShots-b)/a;
+		
 		// initialize x number line for graph
-		const xValues = math.range(0, minRange+40, 0.5).toArray();
+		const xValues = math.range(0, minRange+40, 0.1).toArray();
 		
 		// get y values for creating graph
-		var yValues = xValues.map(function(curr)
+		var yBody= xValues.map(function(curr)
 		{
 			//[0,maxrange] -> constant function
 			if(curr<=maxRange)
@@ -67,15 +92,93 @@
 				return (a*curr)+b;
 			}
 		});
+		var yHead = xValues.map(function(curr)
+		{
+			//[0,maxrange] -> constant function
+			if(curr<=maxRange)
+			{
+				return maxDmg*headMul;
+			}
+			//[minRange,minRange+40] constant function
+			else if(curr>=minRange)
+			{
+				return minDmg*headMul;
+			}
+			//(maxRange,minRange) linear function
+			else
+			{
+				return ((a*curr)+b)*headMul;
+			}
+		});
 		
-		const trace1 = 
+		const traceBody = 
 		{
 			x: xValues,
-			y: yValues,
-			type: 'scatter'
+			y: yBody,
+			type: 'scatter',
+			name: 'Bodyshot'
 		}
-		const data = [trace1];
-		Plotly.newPlot('plot',data);
+		const traceHead = 
+		{
+			x: xValues,
+			y: yHead,
+			type: 'scatter',
+			name: 'Headshot'
+		}
+		const body = [traceBody];
+		const head = [traceHead];	
+		
+		var yTorso = xValues.map(function(curr)
+		{
+			//[0,maxrange] -> constant function
+			if(curr<=maxRange)
+			{
+				return maxDmg*torsoMul;
+			}
+			//[minRange,minRange+40] constant function
+			else if(curr>=minRange)
+			{
+				return minDmg*torsoMul;
+			}
+			//(maxRange,minRange) linear function
+			else
+			{
+				return ((a*curr)+b)*torsoMul;
+			}
+		});
+		const traceTorso = 
+		{
+			x: xValues,
+			y: yTorso,
+			type: 'scatter',
+			name: 'Torsoshot'
+		}
+		const torso = [traceTorso];
+		
+		return {body: body, torso: torso, head: head};
+	}
+	
+	function draw()
+	{
+		var weaponData = getWeaponData(); // [xValues,yBody,yHead,yTorso]
+		
+		var layout = 
+		{
+			xaxis: 
+			{
+				title: 'Range'
+			},
+			yaxis: 
+			{
+				title:'Damage'
+			}
+		};
+		Plotly.newPlot('plot',weaponData[0],layout);
+		
+		for(var i=1; i<weaponData.length; i++)
+		{
+			Plotly.plot('plot',weaponData[i]);
+		}
     }
 </script>
 
