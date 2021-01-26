@@ -35,12 +35,15 @@
 <div id="plot" style="width:100%;height:700px;"></div>
 
 <script>
+	
 	function onChange()
 	{
 		var x = document.getElementById("mySelect").value;
 		document.getElementById("cosie").innerHTML = x;
 		draw();
 	}
+	
+	
 	function testVariables()
 	{
 		var testVariable = document.querySelector('#Body').checked;
@@ -110,24 +113,6 @@
 				return ((a*curr)+b)*headMul;
 			}
 		});
-		
-		const traceBody = 
-		{
-			x: xValues,
-			y: yBody,
-			type: 'scatter',
-			name: 'Bodyshot'
-		}
-		const traceHead = 
-		{
-			x: xValues,
-			y: yHead,
-			type: 'scatter',
-			name: 'Headshot'
-		}
-		const body = [traceBody];
-		const head = [traceHead];	
-		
 		var yTorso = xValues.map(function(curr)
 		{
 			//[0,maxrange] -> constant function
@@ -146,6 +131,21 @@
 				return ((a*curr)+b)*torsoMul;
 			}
 		});
+		
+		const traceBody = 
+		{
+			x: xValues,
+			y: yBody,
+			type: 'scatter',
+			name: 'Bodyshot'
+		}
+		const traceHead = 
+		{
+			x: xValues,
+			y: yHead,
+			type: 'scatter',
+			name: 'Headshot'
+		}	
 		const traceTorso = 
 		{
 			x: xValues,
@@ -153,6 +153,8 @@
 			type: 'scatter',
 			name: 'Torsoshot'
 		}
+		const body = [traceBody];
+		const head = [traceHead];
 		const torso = [traceTorso];
 		
 		return {body: body, torso: torso, head: head};
