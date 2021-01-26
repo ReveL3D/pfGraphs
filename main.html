@@ -14,14 +14,14 @@
 <button onClick="testVariables()">testVariables</button>
 <div id="weaponList">
 	<form onClick="onChange()">
-		<select id="mySelect" size=10>
+		<select id="mySelect" size=5>
 			<option>AK47</option>
 			<option>AK74</option>
 			<option>AS Val</option>
 		</select>
 	</form>
 	
-	<form>
+	<form onClick="onChange()">
 		<input type="checkbox" name="Body" id="Body">
 		<label for="Body">Body</label><br>
 		<input type="checkbox" name="Torso" id="Torso">
@@ -50,7 +50,7 @@
 		alert(testVariable);
 	}
 	
-	
+	//Get weapon data and create x,y value pairs for graphs
 	function getWeaponData()
 	{
 		// Get name selected weapon from weapon list, example:"AK47"
@@ -71,7 +71,26 @@
 		var minShots = Math.ceil( 100/maxDmg );
 		var maxShots = Math.ceil( 100/minDmg );
 		
-		var xD = (minShots-b)/a;
+		
+		var xSk = new Array(); // x for certain shots to kill
+		var ySk = new Array(); // y for certain shots to kill
+		
+		for(var i=minShots;i<maxShots;i++)
+		{
+			xSk.push(((100/i)-b)/a);
+			ySk.push(100/i);
+		}
+		if(100/minDmg <= 100/maxShots)
+		{
+			xSk.push(minRange);
+			ySk.push(100/(100/minDmg));
+		}
+		var traceTest = {
+		x: xSk,
+		y: ySk,
+		mode: 'markers',
+		type: 'scatter'
+		};
 		
 		// initialize x number line for graph
 		const xValues = math.range(0, minRange+40, 0.1).toArray();
@@ -156,18 +175,20 @@
 		const body = [traceBody];
 		const head = [traceHead];
 		const torso = [traceTorso];
+		const skTest = [traceTest];
 		
-		return {body: body, torso: torso, head: head};
+		return {body: body, torso: torso, head: head, skTest: skTest};
 	}
 	
 	
-	// Get the weapon data and make graphs
+	// Plot the graphs
 	function draw()
 	{
 		var weaponData = getWeaponData();
 		var isBody = document.querySelector('#Body').checked;
 		var isHead = document.querySelector('#Head').checked;
 		var isTorso = document.querySelector('#Torso').checked;
+		
 		var layout = 
 		{
 			xaxis: 
@@ -193,6 +214,7 @@
 		{
 			Plotly.plot('plot',weaponData.head);
 		}
+		Plotly.plot('plot',weaponData.skTest);
     }
 </script>
 
