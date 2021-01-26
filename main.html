@@ -43,7 +43,7 @@
 	}
 	function testVariables()
 	{
-		var testVariable = document.getElementById("Body").value;
+		var testVariable = document.querySelector('#Body').checked;
 		alert(testVariable);
 	}
 	
@@ -158,10 +158,14 @@
 		return {body: body, torso: torso, head: head};
 	}
 	
+	
+	// Get the weapon data and make graphs
 	function draw()
 	{
-		var weaponData = getWeaponData(); // [xValues,yBody,yHead,yTorso]
-		
+		var weaponData = getWeaponData();
+		var isBody = document.querySelector('#Body').checked;
+		var isHead = document.querySelector('#Head').checked;
+		var isTorso = document.querySelector('#Torso').checked;
 		var layout = 
 		{
 			xaxis: 
@@ -173,11 +177,19 @@
 				title:'Damage'
 			}
 		};
-		Plotly.newPlot('plot',weaponData[0],layout);
 		
-		for(var i=1; i<weaponData.length; i++)
+		Plotly.newPlot('plot',layout);
+		if(isBody == true)
 		{
-			Plotly.plot('plot',weaponData[i]);
+			Plotly.plot('plot',weaponData.body);
+		}
+		if(isTorso == true)
+		{
+			Plotly.plot('plot',weaponData.torso);
+		}
+		if(isHead == true)
+		{
+			Plotly.plot('plot',weaponData.head);
 		}
     }
 </script>
