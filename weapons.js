@@ -26,5 +26,14 @@ var weapons =
 			"minRange":85,
 			"torsoMul":1.0,
 			"headMul":1.4
+	},
+	"test Weapon":
+	{
+			"maxDmg":25,
+			"minDmg":20,
+			"maxRange":100,
+			"minRange":200,
+			"torsoMul":1.1,
+			"headMul":1.4
 	}
 };
