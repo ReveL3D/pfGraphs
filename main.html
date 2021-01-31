@@ -39,7 +39,8 @@
 <div id="plot"></div>
 
 <script>
-	function init()
+	
+	function clearGraph()
 	{
 		var layout = 
 		{
@@ -50,15 +51,24 @@
 			yaxis: 
 			{
 				title:'Damage'
-			}
+			},
+			hovermode:'closest'
 		};
-		Plotly.newPlot('plot',layout, {staticPlot: true});
-	}
+		var data = [];		
+		var config = 
+		{
+			scrollZoom: true,
+			displayModeBar: false
+		};
+		
+		Plotly.react('plot', data, layout, config);
+		}
+	
 	function onChange()
 	{
 		var x = document.getElementById("mySelect").value;
 		document.getElementById("cosie").innerHTML = x;
-		draw();
+		main();
 	}
 	
 	
@@ -118,10 +128,11 @@
 		var b = maxDmg-(maxRange*a);
 		
 		var bodyShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, 1);
-		//var torsoShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, torsoMul);
 		var headShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, headMul);
+		var torsoShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, torsoMul);
 		
-		var traceTest = {
+		var traceTest = 
+		{
 		x: bodyShotsToKill.xSk,
 		y: bodyShotsToKill.ySk,
 		mode: 'markers',
@@ -129,12 +140,22 @@
 		name: bodyShotsToKill.nameSk.toString()
 		};
 		
-		var traceTest2 = {
+		var traceTest2 = 
+		{
 		x: headShotsToKill.xSk,
 		y: headShotsToKill.ySk,
 		mode: 'markers',
 		type: 'scatter',
 		name: headShotsToKill.nameSk.toString()
+		};
+		
+		var traceTest3 = 
+		{
+		x: torsoShotsToKill.xSk,
+		y: torsoShotsToKill.ySk,
+		mode: 'markers',
+		type: 'scatter',
+		name: torsoShotsToKill.nameSk.toString()
 		};
 		
 		// initialize x number line for graph
@@ -222,38 +243,42 @@
 		const torso = [traceTorso];
 		const bodyTest = [traceTest];
 		const headTest = [traceTest2];
+		const torsoTest = [traceTest3];
 		
-		return {body: body, torso: torso, head: head, bodyTest: bodyTest, headTest: headTest};
+		return {body: body, torso: torso, head: head, bodyTest: bodyTest, headTest: headTest, torsoTest: torsoTest};
 	}
 	
-	
-	// Plot the graphs
-	function draw()
+	// add traces to plot
+	function draw(weaponData_)
 	{
-		var weaponData = getWeaponData();
 		var isBody = document.querySelector('#Body').checked;
 		var isHead = document.querySelector('#Head').checked;
 		var isTorso = document.querySelector('#Torso').checked;
-		
-		Plotly.react('plot');
 		if(isBody == true)
 		{
-			Plotly.plot('plot',weaponData.body);
-			Plotly.plot('plot',weaponData.bodyTest);
+			Plotly.addTraces('plot',weaponData_.body);
+			Plotly.addTraces('plot',weaponData_.bodyTest);
 		}
 		if(isTorso == true)
 		{
-			Plotly.plot('plot',weaponData.torso);
-			Plotly.plot('plot',weaponData.torsoTest);
+			Plotly.addTraces('plot', weaponData_.torso);
+			Plotly.addTraces('plot', weaponData_.torsoTest);
 		}
 		if(isHead == true)
 		{
-			Plotly.plot('plot',weaponData.head);
-			Plotly.plot('plot',weaponData.headTest);
+			Plotly.addTraces('plot',weaponData_.head);
+			Plotly.addTraces('plot',weaponData_.headTest);
 		}
-		
+	}
+	
+	// main function
+	function main()
+	{
+		var weaponData = getWeaponData();
+		clearGraph();
+		draw(weaponData);
     }
-    init();
+    
 </script>
 
 </body>
