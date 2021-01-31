@@ -37,7 +37,6 @@
 
 <div id="cosie"></div>
 <div id="plot"></div>
-
 <script>
 	
 	function clearGraph()
@@ -52,7 +51,8 @@
 			{
 				title:'Damage'
 			},
-			hovermode:'closest'
+			hovermode:'closest',
+			title: document.getElementById("cosie").innerHTML
 		};
 		var data = [];		
 		var config = 
@@ -141,13 +141,14 @@
 			y: [bodyShotsToKill.ySk[i]],
 			mode: 'markers',
 			type: 'scatter',
-			name: bodyShotsToKill.nameSk[i].toString()
+			marker: {'color': 'black'},
+			name: "body" + (bodyShotsToKill.nameSk[i].toString())
 			};
 			bodyShots.push(ShotsHelper);
 		}
 		
 		const headShots = new Array();
-		for(var i=0; i<bodyShotsToKill.xSk.length; i++)
+		for(var i=0; i<headShotsToKill.xSk.length; i++)
 		{
 			var ShotsHelper = 
 			{
@@ -155,7 +156,8 @@
 			y: [headShotsToKill.ySk[i]],
 			mode: 'markers',
 			type: 'scatter',
-			name: (headShotsToKill.nameSk[i].toString())
+			marker: {'color': 'black'},
+			name: "head" + (headShotsToKill.nameSk[i].toString())
 			};
 			headShots.push(ShotsHelper);
 		}
@@ -169,7 +171,8 @@
 			y: [torsoShotsToKill.ySk[i]],
 			mode: 'markers',
 			type: 'scatter',
-			name: torsoShotsToKill.nameSk[i].toString()
+			marker: {'color': 'black'},
+			name: "torso" + (torsoShotsToKill.nameSk[i].toString())
 			};
 			torsoShots.push(ShotsHelper);
 		}
@@ -263,6 +266,16 @@
 		return {body: body, torso: torso, head: head, bodyShots: bodyShots, headShots: headShots, torsoShots: torsoShots};
 	}
 	
+	function checkTorsoMul()
+	{
+		var whatWeapon = document.getElementById("mySelect").value;
+		var torsoMul = weapons[whatWeapon].torsoMul;
+		if(torsoMul == 1.0)
+		{
+			return false;
+		}
+		return true;
+	}
 	// add traces to plot
 	function draw(weaponData_)
 	{
@@ -278,11 +291,12 @@
 				Plotly.addTraces('plot',weaponData_.bodyShots[i]);
 			}
 		}
-		if(isTorso == true)
+		if(isTorso == true && checkTorsoMul())
 		{
+			console.log(weaponData_.torsoMul);
 			Plotly.addTraces('plot', weaponData_.torso);
 			//Plotly.addTraces('plot', weaponData_.torsoTest);
-			for(var i=0; i<weaponData_.bodyShots.length; i++)
+			for(var i=0; i<weaponData_.torsoShots.length; i++)
 			{
 				Plotly.addTraces('plot',weaponData_.torsoShots[i]);
 			}
@@ -290,7 +304,7 @@
 		if(isHead == true)
 		{
 			Plotly.addTraces('plot',weaponData_.head);
-			for(var i=0; i<weaponData_.bodyShots.length; i++)
+			for(var i=0; i<weaponData_.headShots.length; i++)
 			{
 				Plotly.addTraces('plot',weaponData_.headShots[i]);
 			}
