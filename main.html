@@ -131,32 +131,48 @@
 		var headShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, headMul);
 		var torsoShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, torsoMul);
 		
-		var traceTest = 
+
+		const bodyShots = new Array();
+		for(var i=0; i<bodyShotsToKill.xSk.length; i++)
 		{
-		x: bodyShotsToKill.xSk,
-		y: bodyShotsToKill.ySk,
-		mode: 'markers',
-		type: 'scatter',
-		name: bodyShotsToKill.nameSk.toString()
-		};
+			var ShotsHelper = 
+			{
+			x: [bodyShotsToKill.xSk[i]],
+			y: [bodyShotsToKill.ySk[i]],
+			mode: 'markers',
+			type: 'scatter',
+			name: bodyShotsToKill.nameSk[i].toString()
+			};
+			bodyShots.push(ShotsHelper);
+		}
 		
-		var traceTest2 = 
+		const headShots = new Array();
+		for(var i=0; i<bodyShotsToKill.xSk.length; i++)
 		{
-		x: headShotsToKill.xSk,
-		y: headShotsToKill.ySk,
-		mode: 'markers',
-		type: 'scatter',
-		name: headShotsToKill.nameSk.toString()
-		};
+			var ShotsHelper = 
+			{
+			x: [headShotsToKill.xSk[i]],
+			y: [headShotsToKill.ySk[i]],
+			mode: 'markers',
+			type: 'scatter',
+			name: (headShotsToKill.nameSk[i].toString())
+			};
+			headShots.push(ShotsHelper);
+		}
 		
-		var traceTest3 = 
+		const torsoShots = new Array();
+		for(var i=0; i<torsoShotsToKill.xSk.length; i++)
 		{
-		x: torsoShotsToKill.xSk,
-		y: torsoShotsToKill.ySk,
-		mode: 'markers',
-		type: 'scatter',
-		name: torsoShotsToKill.nameSk.toString()
-		};
+			var ShotsHelper = 
+			{
+			x: [torsoShotsToKill.xSk[i]],
+			y: [torsoShotsToKill.ySk[i]],
+			mode: 'markers',
+			type: 'scatter',
+			name: torsoShotsToKill.nameSk[i].toString()
+			};
+			torsoShots.push(ShotsHelper);
+		}
 		
 		// initialize x number line for graph
 		const xValues = math.range(0, minRange+40, 0.1).toArray();
@@ -238,14 +254,13 @@
 			type: 'scatter',
 			name: 'Torsoshot'
 		}
+		
 		const body = [traceBody];
 		const head = [traceHead];
 		const torso = [traceTorso];
-		const bodyTest = [traceTest];
-		const headTest = [traceTest2];
-		const torsoTest = [traceTest3];
 		
-		return {body: body, torso: torso, head: head, bodyTest: bodyTest, headTest: headTest, torsoTest: torsoTest};
+		//return {body: body, torso: torso, head: head, bodyTest: bodyTest, headTest: headTest, torsoTest: torsoTest};
+		return {body: body, torso: torso, head: head, bodyShots: bodyShots, headShots: headShots, torsoShots: torsoShots};
 	}
 	
 	// add traces to plot
@@ -257,17 +272,28 @@
 		if(isBody == true)
 		{
 			Plotly.addTraces('plot',weaponData_.body);
-			Plotly.addTraces('plot',weaponData_.bodyTest);
+			//Plotly.addTraces('plot',weaponData_.bodyTest);
+			for(var i=0; i<weaponData_.bodyShots.length; i++)
+			{
+				Plotly.addTraces('plot',weaponData_.bodyShots[i]);
+			}
 		}
 		if(isTorso == true)
 		{
 			Plotly.addTraces('plot', weaponData_.torso);
-			Plotly.addTraces('plot', weaponData_.torsoTest);
+			//Plotly.addTraces('plot', weaponData_.torsoTest);
+			for(var i=0; i<weaponData_.bodyShots.length; i++)
+			{
+				Plotly.addTraces('plot',weaponData_.torsoShots[i]);
+			}
 		}
 		if(isHead == true)
 		{
 			Plotly.addTraces('plot',weaponData_.head);
-			Plotly.addTraces('plot',weaponData_.headTest);
+			for(var i=0; i<weaponData_.bodyShots.length; i++)
+			{
+				Plotly.addTraces('plot',weaponData_.headShots[i]);
+			}
 		}
 	}
 	
