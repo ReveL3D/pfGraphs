@@ -8,16 +8,19 @@
 <script src="math.js"></script>
 <script type="text/javascript" src="weapons.js"></script>
 <script type="text/javascript" src="plotly.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-<button onClick="testVariables()">testVariables</button>
+
 <div id="weaponList">
+	<button onClick="testVariables()">testVariables</button>
 	<form onClick="onChange()">
 		<select id="mySelect" size=5>
 			<option>AK47</option>
 			<option>AK74</option>
 			<option>AS Val</option>
+			<option>test Weapon</option>
 		</select>
 	</form>
 	
@@ -31,11 +34,26 @@
 	</form>
 </div>
 
+
 <div id="cosie"></div>
-<div id="plot" style="width:100%;height:700px;"></div>
+<div id="plot"></div>
 
 <script>
-	
+	function init()
+	{
+		var layout = 
+		{
+			xaxis: 
+			{
+				title: 'Range'
+			},
+			yaxis: 
+			{
+				title:'Damage'
+			}
+		};
+		Plotly.newPlot('plot',layout, {staticPlot: true});
+	}
 	function onChange()
 	{
 		var x = document.getElementById("mySelect").value;
@@ -48,6 +66,37 @@
 	{
 		var testVariable = document.querySelector('#Body').checked;
 		alert(testVariable);
+	}
+	
+	function getShotsToKill(maxDmg, minDmg, a, b, minRange, mul)
+	{
+		maxDmg*=mul;
+		minDmg*=mul;
+		var minShots = Math.ceil( 100/maxDmg );
+		var maxShots = Math.ceil( 100/minDmg );
+		
+		var xSk = new Array(); // x for certain shots to kill
+		var ySk = new Array(); // y for certain shots to kill
+		var nameSk = new Array();
+		
+		xSk.push(0);
+		ySk.push(maxDmg);
+		nameSk.push(minShots);
+		
+		for(var i=minShots;i<maxShots;i++)
+		{
+			xSk.push( (((100/i)/mul)-b)/a );
+			ySk.push( 100/i );
+			nameSk.push(i+1);
+		}
+		if(100/minDmg == 100 / (100/maxShots))
+		{
+			xSk.push(minRange);
+			ySk.push(100/maxShots);
+			nameSk.push(maxShots+1);
+		}
+		
+		return {xSk: xSk, ySk: ySk, nameSk: nameSk};
 	}
 	
 	//Get weapon data and create x,y value pairs for graphs
@@ -68,28 +117,24 @@
 		var a = (maxDmg-minDmg)/(maxRange-minRange);
 		var b = maxDmg-(maxRange*a);
 		
-		var minShots = Math.ceil( 100/maxDmg );
-		var maxShots = Math.ceil( 100/minDmg );
+		var bodyShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, 1);
+		//var torsoShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, torsoMul);
+		var headShotsToKill = getShotsToKill(maxDmg, minDmg, a, b, minRange, headMul);
 		
-		
-		var xSk = new Array(); // x for certain shots to kill
-		var ySk = new Array(); // y for certain shots to kill
-		
-		for(var i=minShots;i<maxShots;i++)
-		{
-			xSk.push(((100/i)-b)/a);
-			ySk.push(100/i);
-		}
-		if(100/minDmg <= 100/maxShots)
-		{
-			xSk.push(minRange);
-			ySk.push(100/(100/minDmg));
-		}
 		var traceTest = {
-		x: xSk,
-		y: ySk,
+		x: bodyShotsToKill.xSk,
+		y: bodyShotsToKill.ySk,
 		mode: 'markers',
-		type: 'scatter'
+		type: 'scatter',
+		name: bodyShotsToKill.nameSk.toString()
+		};
+		
+		var traceTest2 = {
+		x: headShotsToKill.xSk,
+		y: headShotsToKill.ySk,
+		mode: 'markers',
+		type: 'scatter',
+		name: headShotsToKill.nameSk.toString()
 		};
 		
 		// initialize x number line for graph
@@ -175,9 +220,10 @@
 		const body = [traceBody];
 		const head = [traceHead];
 		const torso = [traceTorso];
-		const skTest = [traceTest];
+		const bodyTest = [traceTest];
+		const headTest = [traceTest2];
 		
-		return {body: body, torso: torso, head: head, skTest: skTest};
+		return {body: body, torso: torso, head: head, bodyTest: bodyTest, headTest: headTest};
 	}
 	
 	
@@ -189,33 +235,25 @@
 		var isHead = document.querySelector('#Head').checked;
 		var isTorso = document.querySelector('#Torso').checked;
 		
-		var layout = 
-		{
-			xaxis: 
-			{
-				title: 'Range'
-			},
-			yaxis: 
-			{
-				title:'Damage'
-			}
-		};
-		
-		Plotly.newPlot('plot',layout);
+		Plotly.react('plot');
 		if(isBody == true)
 		{
 			Plotly.plot('plot',weaponData.body);
+			Plotly.plot('plot',weaponData.bodyTest);
 		}
 		if(isTorso == true)
 		{
 			Plotly.plot('plot',weaponData.torso);
+			Plotly.plot('plot',weaponData.torsoTest);
 		}
 		if(isHead == true)
 		{
 			Plotly.plot('plot',weaponData.head);
+			Plotly.plot('plot',weaponData.headTest);
 		}
-		Plotly.plot('plot',weaponData.skTest);
+		
     }
+    init();
 </script>
 
 </body>
