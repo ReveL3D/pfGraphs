@@ -14,10 +14,11 @@
 <body>
 
 <div id="weaponList">
+	<div id="block">
 	<form onClick="fillList()">
 		Weapon type:<br>
-		<select id="typeSelect" size=5>
-			<option>Assault Rifle</option>
+		<select id="typeSelect" size=7>
+			<option selected="selected">Assault Rifle</option>
 			<option>Personal Defense Weapon</option>
 			<option>Light Machine Gun</option>
 			<option>Sniper Rifle</option>
@@ -31,13 +32,18 @@
 			<option>Others</option>
 		</select>
 	</form>
-	<form onClick="onChange()">
+	</div>
+	
+	<div id="block">
+	<form onClick="main()">
 		Weapon:<br>
-		<select id="weaponSelect" size=5>
+		<select id="weaponSelect" size=7>
 		</select>
 	</form>
+	</div>
 	
-	<form onClick="onChange()">
+	<div id="block">
+	<form onClick="main()">
 		<input type="checkbox" name="Body" id="Body">
 		<label for="Body">Body</label><br>
 		<input type="checkbox" name="Torso" id="Torso">
@@ -45,12 +51,19 @@
 		<input type="checkbox" name="Head" id="Head">
 		<label for="Head">Head</label><br>
 	</form>
+	</div>
+	
+	<div id="block" style="float:right">
+	Scroll: zoom<br>
+	Click+hold: rectangle zoom<br>
+	Double-click: default zoom<br>
+	</div>
 </div>
 
-
-
 <div id="plot"></div>
-<script>	
+
+<script>
+	// fills weapon list	
 	function fillList()
 	{
 		for(element in document.getElementById("weaponSelect").options) { document.getElementById("weaponSelect").options.remove(0); }
@@ -65,6 +78,7 @@
 		}
 	}
 	
+	//clears the graph for new weapon
 	function clearGraph()
 	{
 		var layout = 
@@ -78,7 +92,7 @@
 				title:'Damage'
 			},
 			hovermode:'closest',
-			//title: document.getElementById("cosie").innerHTML
+			title: document.getElementById("weaponSelect").value
 		};
 		var data = [];		
 		var config = 
@@ -88,13 +102,10 @@
 		};
 		
 		Plotly.react('plot', data, layout, config);
-		}
-	
-	function onChange()
-	{
-		main();
 	}
-		
+	
+	
+	// gets the required shots to kill and returns an array of x,y pairs
 	function getShotsToKill(maxDmg, minDmg, a, b, minRange, mul)
 	{
 		maxDmg*=mul;
@@ -126,13 +137,13 @@
 		return {xSk: xSk, ySk: ySk, nameSk: nameSk};
 	}
 	
-	//Get weapon data and create x,y value pairs for graphs
+	// get weapon data and create x,y value pairs for graphs
 	function getWeaponData()
 	{
-		// Get name selected weapon from weapon list, example:"AK47"
+		// get name selected weapon from weapon list, example:"AK47"
 		var whatWeapon = document.getElementById("weaponSelect").value;
 		
-		// Get values for that weapon from weapons.js json file
+		// Ggt values for that weapon from weapons.js json file
 		var maxDmg = weapons[whatWeapon].maxDmg;
 		var minDmg = weapons[whatWeapon].minDmg;
 		var maxRange = weapons[whatWeapon].maxRange;
@@ -200,17 +211,14 @@
 		// get y values for creating graph
 		var yBody= xValues.map(function(curr)
 		{
-			//[0,maxrange] -> constant function
 			if(curr<=maxRange)
 			{
 				return maxDmg;
 			}
-			//[minRange,minRange+40] constant function
 			else if(curr>=minRange)
 			{
 				return minDmg;
 			}
-			//(maxRange,minRange) linear function
 			else
 			{
 				return (a*curr)+b;
@@ -218,17 +226,14 @@
 		});
 		var yHead = xValues.map(function(curr)
 		{
-			//[0,maxrange] -> constant function
 			if(curr<=maxRange)
 			{
 				return maxDmg*headMul;
 			}
-			//[minRange,minRange+40] constant function
 			else if(curr>=minRange)
 			{
 				return minDmg*headMul;
 			}
-			//(maxRange,minRange) linear function
 			else
 			{
 				return ((a*curr)+b)*headMul;
@@ -236,17 +241,14 @@
 		});
 		var yTorso = xValues.map(function(curr)
 		{
-			//[0,maxrange] -> constant function
 			if(curr<=maxRange)
 			{
 				return maxDmg*torsoMul;
 			}
-			//[minRange,minRange+40] constant function
 			else if(curr>=minRange)
 			{
 				return minDmg*torsoMul;
 			}
-			//(maxRange,minRange) linear function
 			else
 			{
 				return ((a*curr)+b)*torsoMul;
@@ -279,10 +281,10 @@
 		const head = [traceHead];
 		const torso = [traceTorso];
 		
-		//return {body: body, torso: torso, head: head, bodyTest: bodyTest, headTest: headTest, torsoTest: torsoTest};
 		return {body: body, torso: torso, head: head, bodyShots: bodyShots, headShots: headShots, torsoShots: torsoShots};
 	}
 	
+	// checks if the torsomultiplier is equal to 1.0
 	function checkTorsoMul()
 	{
 		var whatWeapon = document.getElementById("weaponSelect").value;
@@ -293,7 +295,8 @@
 		}
 		return true;
 	}
-	// add traces to plot
+	
+	// add traces to plot, or simply just plots the plot
 	function draw(weaponData_)
 	{
 		var isBody = document.querySelector('#Body').checked;
@@ -302,7 +305,6 @@
 		if(isBody == true)
 		{
 			Plotly.addTraces('plot',weaponData_.body);
-			//Plotly.addTraces('plot',weaponData_.bodyTest);
 			for(var i=0; i<weaponData_.bodyShots.length; i++)
 			{
 				Plotly.addTraces('plot',weaponData_.bodyShots[i]);
@@ -310,9 +312,7 @@
 		}
 		if(isTorso == true && checkTorsoMul())
 		{
-			console.log(weaponData_.torsoMul);
 			Plotly.addTraces('plot', weaponData_.torso);
-			//Plotly.addTraces('plot', weaponData_.torsoTest);
 			for(var i=0; i<weaponData_.torsoShots.length; i++)
 			{
 				Plotly.addTraces('plot',weaponData_.torsoShots[i]);
@@ -327,7 +327,7 @@
 			}
 		}
 	}
-
+	
 	// main function
 	function main()
 	{
@@ -335,7 +335,7 @@
 		clearGraph();
 		draw(weaponData);
     }
-    
+    fillList();
 </script>
 
 </body>
