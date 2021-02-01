@@ -14,13 +14,26 @@
 <body>
 
 <div id="weaponList">
-	<button onClick="testVariables()">testVariables</button>
+	<form onClick="fillList()">
+		Weapon type:<br>
+		<select id="typeSelect" size=5>
+			<option>Assault Rifle</option>
+			<option>Personal Defense Weapon</option>
+			<option>Light Machine Gun</option>
+			<option>Sniper Rifle</option>
+			<option>Carbine</option>
+			<option>Designated Marksman Rifle</option>
+			<option>Battle Rifle</option>
+			<option>Shotgun</option>
+			<option>Pistol</option>
+			<option>Machine Pistol</option>
+			<option>Revolver</option>
+			<option>Others</option>
+		</select>
+	</form>
 	<form onClick="onChange()">
-		<select id="mySelect" size=5>
-			<option>AK47</option>
-			<option>AK74</option>
-			<option>AS Val</option>
-			<option>test Weapon</option>
+		Weapon:<br>
+		<select id="weaponSelect" size=5>
 		</select>
 	</form>
 	
@@ -35,9 +48,22 @@
 </div>
 
 
-<div id="cosie"></div>
+
 <div id="plot"></div>
-<script>
+<script>	
+	function fillList()
+	{
+		for(element in document.getElementById("weaponSelect").options) { document.getElementById("weaponSelect").options.remove(0); }
+		for(x in weapons)
+		{
+			if(weapons[x].category == document.getElementById("typeSelect").value)
+			{
+				var opt = document.createElement("option");
+				opt.innerHTML = x;
+				document.getElementById("weaponSelect").appendChild(opt);
+			}
+		}
+	}
 	
 	function clearGraph()
 	{
@@ -52,7 +78,7 @@
 				title:'Damage'
 			},
 			hovermode:'closest',
-			title: document.getElementById("cosie").innerHTML
+			//title: document.getElementById("cosie").innerHTML
 		};
 		var data = [];		
 		var config = 
@@ -66,18 +92,9 @@
 	
 	function onChange()
 	{
-		var x = document.getElementById("mySelect").value;
-		document.getElementById("cosie").innerHTML = x;
 		main();
 	}
-	
-	
-	function testVariables()
-	{
-		var testVariable = document.querySelector('#Body').checked;
-		alert(testVariable);
-	}
-	
+		
 	function getShotsToKill(maxDmg, minDmg, a, b, minRange, mul)
 	{
 		maxDmg*=mul;
@@ -113,7 +130,7 @@
 	function getWeaponData()
 	{
 		// Get name selected weapon from weapon list, example:"AK47"
-		var whatWeapon = document.getElementById("mySelect").value;
+		var whatWeapon = document.getElementById("weaponSelect").value;
 		
 		// Get values for that weapon from weapons.js json file
 		var maxDmg = weapons[whatWeapon].maxDmg;
@@ -268,7 +285,7 @@
 	
 	function checkTorsoMul()
 	{
-		var whatWeapon = document.getElementById("mySelect").value;
+		var whatWeapon = document.getElementById("weaponSelect").value;
 		var torsoMul = weapons[whatWeapon].torsoMul;
 		if(torsoMul == 1.0)
 		{
@@ -310,7 +327,7 @@
 			}
 		}
 	}
-	
+
 	// main function
 	function main()
 	{
