@@ -1,9 +1,14 @@
 #weaponList
 {
 	height:10%;
-	width:100%;
-	display:inline-block;
-	background-color:red;
+	width:auto;
+	background-color:black;
+	color:white;
+	padding: 5px;
+}
+#weaponList form
+{
+	display: inline-block;
 }
 #plot
 {
