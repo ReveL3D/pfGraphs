@@ -7,6 +7,7 @@
 <head>
 <script src="math.js"></script>
 <script type="text/javascript" src="weapons.js"></script>
+<script type="text/javascript" src="attachments.js"></script>
 <script type="text/javascript" src="plotly.min.js" charset="utf-8"></script>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,7 +16,7 @@
 
 <div id="weaponList">
 	<div id="block">
-	<form onClick="fillList()">
+	<form onClick="fillList('weaponSelect')">
 		Weapon type:<br>
 		<select id="typeSelect" size=7>
 			<option selected="selected">Assault Rifle</option>
@@ -44,6 +45,23 @@
 	
 	<div id="block">
 	<form onClick="main()">
+		Barrel:<br>
+		<select id="barrelSelect" size=7>
+		</select>
+	</form>
+	</div>
+	
+	<div id="block">
+	<form onClick="main()">
+		Other:<br>
+		<select id="otherSelect" size=7>
+		</select>
+	</form>
+	</div>
+	
+	
+	<div id="block">
+	<form onClick="main()">
 		<input type="checkbox" name="Body" id="Body">
 		<label for="Body">Body</label><br>
 		<input type="checkbox" name="Torso" id="Torso">
@@ -64,18 +82,45 @@
 
 <script>
 	// fills weapon list	
-	function fillList()
+	function fillList(whatIdToClear) //(whatIdToClear, 
 	{
-		for(element in document.getElementById("weaponSelect").options) { document.getElementById("weaponSelect").options.remove(0); }
-		for(x in weapons)
+		//clear list
+		if(whatIdToClear != '')
 		{
-			if(weapons[x].category == document.getElementById("typeSelect").value)
+			for(element in document.getElementById(whatIdToClear).options)
+			{ 
+				document.getElementById(whatIdToClear).options.remove(0); 
+			} 
+			
+			for(whatWeapon in weapons)
 			{
-				var opt = document.createElement("option");
-				opt.innerHTML = x;
-				document.getElementById("weaponSelect").appendChild(opt);
+				if(weapons[whatWeapon].category == document.getElementById("typeSelect").value)
+				{
+					var opt = document.createElement("option");
+					opt.innerHTML = whatWeapon;
+					document.getElementById("weaponSelect").appendChild(opt);
+				}
 			}
 		}
+		else
+		{
+			for(whatAttachment in attachments)
+			{
+				var opt = document.createElement("option");
+				opt.innerHTML = whatAttachment;
+				if(attachments[whatAttachment].category == "Barrel")
+				{
+					
+					document.getElementById("barrelSelect").appendChild(opt);
+				}
+				else
+				{
+					document.getElementById("otherSelect").appendChild(opt);
+				}
+			}
+		}
+		
+		
 	}
 	
 	//clears the graph for new weapon
@@ -142,14 +187,33 @@
 	{
 		// get name selected weapon from weapon list, example:"AK47"
 		var whatWeapon = document.getElementById("weaponSelect").value;
-		
-		// Ggt values for that weapon from weapons.js json file
 		var maxDmg = weapons[whatWeapon].maxDmg;
 		var minDmg = weapons[whatWeapon].minDmg;
 		var maxRange = weapons[whatWeapon].maxRange;
 		var minRange = weapons[whatWeapon].minRange;
 		var headMul = weapons[whatWeapon].headMul;
 		var torsoMul = weapons[whatWeapon].torsoMul;
+		
+		if(document.getElementById("barrelSelect").value != '')
+		{
+			var whatAttachments = document.getElementById("barrelSelect").value;
+			var whatAttachments2 = document.getElementById("otherSelect").value;
+			maxDmg *= (attachments[whatAttachments].maxDmgMul * attachments[whatAttachments2].maxDmgMul);
+			minDmg *= (attachments[whatAttachments].minDmgMul * attachments[whatAttachments2].minDmgMul);
+			maxRange *= (attachments[whatAttachments].maxRangeMul * attachments[whatAttachments2].maxRangeMul);
+			minRange *= (attachments[whatAttachments].minRangeMul * attachments[whatAttachments2].minRangeMul);
+			headMul *= (attachments[whatAttachments].headMul * attachments[whatAttachments2].headMul);
+			if(whatAttachments2 == "Armor Piercing")
+			{
+				torsoMul = 1;
+			}
+			else
+			{
+				torsoMul *= (attachments[whatAttachments].torsoMul * attachments[whatAttachments2].torsoMul);
+			}
+		}
+		// Ggt values for that weapon from weapons.js json file
+		
 		
 		// calculate a,b for f(x)=ax+b
 		var a = (maxDmg-minDmg)/(maxRange-minRange);
@@ -335,7 +399,8 @@
 		clearGraph();
 		draw(weaponData);
     }
-    fillList();
+    fillList('weaponSelect');
+    fillList('');
 </script>
 
 </body>
