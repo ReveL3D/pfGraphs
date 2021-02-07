@@ -9,7 +9,7 @@ var attachments =
 	"minRangeMul": 1,
 	"headMul": 1,
 	"torsoMul": 1,
-	"category": "Other"
+	"category": "Ammo"
 },
 
 "No Attachment":
@@ -110,7 +110,7 @@ var attachments =
 	"minRangeMul": 1,
 	"headMul": 1,
 	"torsoMul": 1,
-	"category": "Other"
+	"category": "Ammo"
 },
 
 "Hollow Point":
@@ -121,7 +121,51 @@ var attachments =
 	"minRangeMul": 0.9,
 	"headMul": 0.8,
 	"torsoMul": 1,
-	"category": "Other"
+	"category": "Ammo"
 },
+
+"Flechette":
+{
+	"maxDmgMul": 0.8,
+	"minDmgMul": 1,
+	"maxRangeMul": 1.2,
+	"minRangeMul": 1,
+	"headMul": 1,
+	"torsoMul": 1,
+	"category": "Ammo"
+},
+
+"Birdshot":
+{
+	"maxDmgMul": 0.9,
+	"minDmgMul": 0.9,
+	"maxRangeMul": 1.2,
+	"minRangeMul": 1,
+	"headMul": 1,
+	"torsoMul": 1,
+	"category": "Ammo"
+},
+
+"Rubber Pellets":
+{
+	"maxDmgMul": 1.3,
+	"minDmgMul": 0.9,
+	"maxRangeMul": 1,
+	"minRangeMul": 1,
+	"headMul": 1,
+	"torsoMul": 1,
+	"category": "Ammo"
+},
+
+"Slugs":
+{
+	"maxDmgMul": 3,
+	"minDmgMul": 2.5,
+	"maxRangeMul": 1,
+	"minRangeMul": 1,
+	"headMul": 2.29,
+	"torsoMul": 1.2,
+	"category": "Ammo"
+}
 
 }
