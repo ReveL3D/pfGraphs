@@ -54,7 +54,7 @@
 	<div id="block">
 	<form onClick="main()">
 		Other:<br>
-		<select id="otherSelect" size=7>
+		<select id="ammoSelect" size=7>
 		</select>
 	</form>
 	</div>
@@ -70,7 +70,9 @@
 		<label for="Head">Head</label><br>
 	</form>
 	</div>
-	
+	<div id="block" style="width:10%; float:right;">
+	example:torso4 - to the right of torso4 the weapon will kill in 4 shots
+	</div>
 	<div id="block" style="float:right">
 	Scroll: zoom<br>
 	Click+hold: rectangle zoom<br>
@@ -113,9 +115,9 @@
 					
 					document.getElementById("barrelSelect").appendChild(opt);
 				}
-				else
+				else if(attachments[whatAttachment].category == "Ammo")
 				{
-					document.getElementById("otherSelect").appendChild(opt);
+					document.getElementById("ammoSelect").appendChild(opt);
 				}
 			}
 		}
@@ -197,7 +199,7 @@
 		if(document.getElementById("barrelSelect").value != '')
 		{
 			var whatAttachments = document.getElementById("barrelSelect").value;
-			var whatAttachments2 = document.getElementById("otherSelect").value;
+			var whatAttachments2 = document.getElementById("ammoSelect").value;
 			maxDmg *= (attachments[whatAttachments].maxDmgMul * attachments[whatAttachments2].maxDmgMul);
 			minDmg *= (attachments[whatAttachments].minDmgMul * attachments[whatAttachments2].minDmgMul);
 			maxRange *= (attachments[whatAttachments].maxRangeMul * attachments[whatAttachments2].maxRangeMul);
@@ -374,7 +376,7 @@
 				Plotly.addTraces('plot',weaponData_.bodyShots[i]);
 			}
 		}
-		if(isTorso == true && checkTorsoMul())
+		if(isTorso == true && (isBody == false || checkTorsoMul()))
 		{
 			Plotly.addTraces('plot', weaponData_.torso);
 			for(var i=0; i<weaponData_.torsoShots.length; i++)
